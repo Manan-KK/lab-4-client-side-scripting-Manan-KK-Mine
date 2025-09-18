@@ -10,7 +10,8 @@ Attendees - A textbox. User should enter the names of the attendees separated by
 
 Add regex validation where needed like the link and time
 
-Prompt 2)Add a category form to the modal field(with color coordination based on it), have save event save the values in a JSON array called events(have a console log print the results for troubleshooting). Finally create a display function that displays the events with a background div of event_element.classList = 'event row border rounded m-1 py-1'; with a inner div with the details appended to it.
+Prompt 2)
+Add a category form to the modal field(with color coordination based on it), have save event save the values in a JSON array called events(have a console log print the results for troubleshooting). Finally create a display function that displays the events with a background div of event_element.classList = 'event row border rounded m-1 py-1'; with a inner div with the details appended to it.
 
 3) refactor script.js into:
 
