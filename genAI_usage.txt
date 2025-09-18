@@ -1,0 +1,22 @@
+Prompt 1)
+Create a modal in bootcamp with the following options
+Event Name - A Textbox. Set the id property to be event_name.
+Weekday - A Dropdown with Days of the week as options. Use <select> element. Set the id property to be event_weekday.
+Time - A Time picker. Set the id property to be event_time and type property to be "time" as well.
+Event Modality - Use a dropdown with two options - "In-Person" or "Remote". If “In-person” option is selected, then the "Location" and "Attendees" fields should be shown. If “Remote” option is selected, then "Remote URL" and "Attendees" fields should be shown. Set the id property to be event_modality.
+Location - A textbox. Set the id property to be event_location.
+Remote URL - A textbox. User will enter a Meeting URL (Zoom, MS Teams etc.). Use appropriate text to make this apparent to users. Consider using the placeholder attribute of the <input> tag. Set the id property to be event_remote_url.
+Attendees - A textbox. User should enter the names of the attendees separated by commas. Use appropriate text to make this apparent to users. Consider using the placeholder attribute of the <input> tag. Set the id property to be event_attendees.
+
+Add regex validation where needed like the link and time
+
+Prompt 2)Add a category form to the modal field(with color coordination based on it), have save event save the values in a JSON array called events(have a console log print the results for troubleshooting). Finally create a display function that displays the events with a background div of event_element.classList = 'event row border rounded m-1 py-1'; with a inner div with the details appended to it.
+
+3) refactor script.js into:
+
+function updateLocationOptions() {}
+function saveEvent() {}
+function addEventToCalendarUI(eventInfo) {}
+function createEventCard(eventDetails) {}
+
+4)
