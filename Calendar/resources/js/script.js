@@ -20,8 +20,7 @@ let weekdaySelect;
 let attendeesInput;
 
 const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
-const meetingUrlPattern = /^https?:\/\/\S+$/i;
-
+const meetingUrlPattern = /^https?:\/\/[a-z0-9-]+(\.[a-z0-9-]+)+(?:[^\s]*)?$/i;
 function updateLocationOptions() {
     const isRemote = modalitySelect.value === 'remote';
 
