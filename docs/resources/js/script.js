@@ -18,6 +18,8 @@ let timeInput;
 let eventNameInput;
 let weekdaySelect;
 let attendeesInput;
+let editingEventIndex = null;
+let editingEventElement = null;
 
 const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
 const meetingUrlPattern = /^https?:\/\/[a-z0-9-]+(\.[a-z0-9-]+)+(?:[^\s]*)?$/i;
@@ -84,10 +86,21 @@ function saveEvent(submitEvent) {
         attendees: attendeesInput.value.trim()
     };
 
-    events.push(eventDetails);
-    console.log('Events:', JSON.stringify(events, null, 2));
-
-    addEventToCalendarUI(eventDetails);
+    const isEditing = editingEventIndex !== null;
+    if (isEditing) {
+        events[editingEventIndex] = eventDetails;
+        const updatedCard = createEventCard(eventDetails, editingEventIndex);
+        const newDayColumn = document.getElementById(eventDetails.weekday);
+        if (editingEventElement?.parentNode && editingEventElement.parentNode.id === eventDetails.weekday) {
+            editingEventElement.replaceWith(updatedCard);
+        } else if (newDayColumn) {
+            editingEventElement?.remove();
+            newDayColumn.appendChild(updatedCard);
+        }
+    } else {
+        events.push(eventDetails);
+        addEventToCalendarUI(eventDetails, events.length - 1);
+    }
 
     const modalElement = document.getElementById('eventModal');
     const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
@@ -99,19 +112,21 @@ function saveEvent(submitEvent) {
     updateLocationOptions();
     validateTime();
     validateMeetingUrl();
+    editingEventIndex = null;
+    editingEventElement = null;
 }
 
-function addEventToCalendarUI(eventInfo) {
+function addEventToCalendarUI(eventInfo, eventIndex) {
     const dayColumn = document.getElementById(eventInfo.weekday);
     if (!dayColumn) {
         return;
     }
 
-    const eventCard = createEventCard(eventInfo);
+    const eventCard = createEventCard(eventInfo, eventIndex);
     dayColumn.appendChild(eventCard);
 }
 
-function createEventCard(eventDetails) {
+function createEventCard(eventDetails, eventIndex) {
     const category = categoryConfig[eventDetails.category] || categoryConfig.other;
 
     const eventElement = document.createElement('div');
@@ -119,6 +134,7 @@ function createEventCard(eventDetails) {
     eventElement.style.backgroundColor = category.color;
     eventElement.style.color = category.textColor;
     eventElement.style.borderColor = category.textColor;
+    eventElement.dataset.eventIndex = eventIndex;
 
     const detailDiv = document.createElement('div');
     detailDiv.className = 'col';
@@ -143,8 +159,37 @@ function createEventCard(eventDetails) {
 
     detailDiv.append(titleLine, metaLine, locationLine, attendeesLine);
     eventElement.appendChild(detailDiv);
+    eventElement.addEventListener('click', () => openEventForEdit(eventIndex, eventElement));
 
     return eventElement;
+}
+
+function openEventForEdit(eventIndex, cardElement) {
+    const eventDetails = events[eventIndex];
+    if (!eventDetails) {
+        return;
+    }
+
+    editingEventIndex = eventIndex;
+    editingEventElement = cardElement;
+    form.classList.remove('was-validated');
+
+    eventNameInput.value = eventDetails.name;
+    weekdaySelect.value = eventDetails.weekday;
+    timeInput.value = eventDetails.time;
+    modalitySelect.value = eventDetails.modality;
+    categorySelect.value = eventDetails.category;
+    attendeesInput.value = eventDetails.attendees;
+
+    updateLocationOptions();
+    locationInput.value = eventDetails.location;
+    remoteUrlInput.value = eventDetails.remoteUrl;
+
+    validateTime();
+    validateMeetingUrl();
+
+    const modalElement = document.getElementById('eventModal');
+    bootstrap.Modal.getOrCreateInstance(modalElement).show();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -171,6 +216,16 @@ document.addEventListener('DOMContentLoaded', () => {
     timeInput.addEventListener('input', validateTime);
     remoteUrlInput.addEventListener('input', validateMeetingUrl);
     form.addEventListener('submit', saveEvent);
+    const modalElement = document.getElementById('eventModal');
+    modalElement.addEventListener('hidden.bs.modal', () => {
+        form.reset();
+        form.classList.remove('was-validated');
+        editingEventIndex = null;
+        editingEventElement = null;
+        updateLocationOptions();
+        validateTime();
+        validateMeetingUrl();
+    });
 
     updateLocationOptions();
     validateTime();
